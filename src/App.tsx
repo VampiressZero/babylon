@@ -1,31 +1,12 @@
-import { FC, useEffect, useRef } from 'react';
+import { FC } from 'react';
 
+import { Playground } from './features/Playground';
 import styles from './App.module.css';
+import { SettingsMenu } from './features/SettingsMenu';
 
-import { MainScene } from './lib/immersive/mainScene';
-
-/**
- * App component containing canvas with babylonjs scene.
- * Can be moved to a separate component.
- */
-export const App: FC = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const scene = useRef<MainScene | null>(null);
-
-  useEffect(() => {
-    if (canvasRef.current != null) {
-      scene.current = new MainScene(canvasRef.current);
-    }
-
-    return () => scene.current?.erase();
-  }, []);
-
-  return (
-    <div className={styles.root}>
-      <canvas
-        className={styles.scene}
-        ref={canvasRef}
-      />
-    </div>
-  );
-};
+export const App: FC = () => (
+  <div className={styles.root}>
+    <Playground />
+    <SettingsMenu />
+  </div>
+);
