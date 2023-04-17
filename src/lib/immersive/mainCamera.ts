@@ -9,10 +9,15 @@ export class MainCamera {
    * @param canvas Canvas.
    */
   public static create(scene: Scene, canvas: HTMLCanvasElement): UniversalCamera {
-    const camera = new UniversalCamera('mainCamera', new Vector3(110, 80, -220), scene);
+    const camera = new UniversalCamera('mainCamera', new Vector3(-18, 10, -15), scene);
+    // const camera = new UniversalCamera('mainCamera', new Vector3(-5.46, 0, 0), scene);
+
     camera.attachControl(canvas, true);
-    camera.rotation = new Vector3(0.2, -0.5, 0);
-    // console.log(camera.position);
+    camera.rotation = new Vector3(0.45, 0.85, 0);
+    // camera.rotation = new Vector3(0.002072, 1.5874, 0);
+
+    camera.speed = 0.5;
+    camera.inverseRotationSpeed = 10;
 
     return camera;
   }

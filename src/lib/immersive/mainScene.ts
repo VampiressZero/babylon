@@ -1,9 +1,7 @@
-import { Color3, Engine, MeshBuilder, Scene, StandardMaterial, Texture, UniversalCamera } from '@babylonjs/core';
-import { baseObjects } from 'src/utils';
+import { Color3, Engine, GroundMesh, MeshBuilder, Scene, StandardMaterial, UniversalCamera } from '@babylonjs/core';
 
 import { MainCamera } from './mainCamera';
 import { MainLight } from './mainLight';
-import { addMaterial } from './mainMaterial';
 
 /** Main scene of the app. */
 export class MainScene {
@@ -16,6 +14,9 @@ export class MainScene {
   /** Camera. */
   public readonly camera: UniversalCamera;
 
+  /** Ground. */
+  public readonly ground: GroundMesh;
+
   public constructor(
     canvas: HTMLCanvasElement,
   ) {
@@ -25,21 +26,7 @@ export class MainScene {
     this.engine.runRenderLoop(() => this.scene.render());
     this.camera = MainCamera.create(this.scene, canvas);
     MainLight.create(this.scene);
-    this.createGround();
-
-    baseObjects(this.scene);
-    // console.log(baseObjects());
-
-    // const ball = MeshBuilder.CreateSphere('phere', { diameter: 50 });
-    // console.log(ball);
-    // const ball = MeshBuilder.CreateSphere('ball', { diameter: 20 });
-    // ball.material = addMaterial(ball, 'ball', {
-    //   diffuse: '/textures/ForestLeaves/diffuse.png',
-    //   ao: '/textures/ForestLeaves/ao.png',
-    //   normal: '/textures/ForestLeaves/normal.png',
-    //   rough: '/textures/ForestLeaves/rough.png',
-    //   displacement: '/textures/ForestLeaves/displacement.png',
-    // });
+    this.ground = this.createGround();
   }
 
   /** Erase 3D related resources. */
@@ -49,10 +36,11 @@ export class MainScene {
   }
 
   // Dumb ground. Just to show something at scene
-  private createGround(): void {
-    const ground = MeshBuilder.CreateGround('ground', { width: 250, height: 250 });
+  private createGround(): GroundMesh {
+    const ground = MeshBuilder.CreateGround('ground', { width: 25, height: 25 });
     const material = new StandardMaterial('groundMaterial');
-    material.diffuseColor = Color3.Random();
+    material.diffuseColor = Color3.White();
     ground.material = material;
+    return ground;
   }
 }

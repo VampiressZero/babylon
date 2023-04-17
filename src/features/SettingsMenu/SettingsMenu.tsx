@@ -5,18 +5,8 @@ import { MainScene } from 'src/lib/immersive/mainScene';
 import styles from './SettingsMenu.module.css';
 
 const SettingsMenuComponent: FC = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const scene = useRef<MainScene | null>(null);
 
-  // const ball = scene?.current && MeshBuilder.CreateSphere('ball', { diameter: 2 }, scene.current.scene);
-  // const light = scene?.current && new DirectionalLight('ligth', new Vector3(1, 0, 0), scene.current.scene);
-  useEffect(() => {
-    if (canvasRef.current != null) {
-      scene.current = new MainScene(canvasRef.current);
-    }
-
-    return () => scene.current?.erase();
-  }, []);
+  console.log();
 
   return (
     <div>
