@@ -2,6 +2,8 @@ import { Mesh, MeshBuilder, Scene, StandardMaterial, Texture, Color3 } from '@ba
 import { sample, random } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 
+import { GROUND_SIZE } from './constants';
+
 import { TexturesUrl } from './models';
 
 export const baseObjects = (scene: Scene) => {
@@ -41,6 +43,10 @@ export const baseObjects = (scene: Scene) => {
 
   const object = objectCreate();
   object.position.y = object.getBoundingInfo().boundingBox.maximumWorld.y;
+
+  const maxPosition = GROUND_SIZE / 2;
+  object.position.x = random(-maxPosition, maxPosition);
+  object.position.z = random(-maxPosition, maxPosition);
 
   const material = new StandardMaterial('groundMaterial');
   material.diffuseColor = Color3.Random();

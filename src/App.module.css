@@ -2,5 +2,5 @@
   height: 100vh;
   overflow: hidden;
   display: grid;
-  grid-template-columns: 10fr minmax(300px, 2fr);
+  grid-template-columns: 9fr minmax(350px, 3fr);
 }

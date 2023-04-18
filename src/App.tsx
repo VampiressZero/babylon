@@ -1,12 +1,15 @@
 import { FC } from 'react';
+import { Provider } from 'react-redux';
+import { store } from 'store/store';
 
-import { Playground } from './features/Playground';
+import { Main } from 'features/Main';
+
 import styles from './App.module.css';
-import { SettingsMenu } from './features/SettingsMenu';
 
 export const App: FC = () => (
-  <div className={styles.root}>
-    <Playground />
-    <SettingsMenu />
-  </div>
+  <Provider store={store}>
+    <div className={styles.root}>
+      <Main />
+    </div>
+  </Provider>
 );

@@ -1,4 +1,5 @@
 import { Color3, Engine, GroundMesh, MeshBuilder, Scene, StandardMaterial, UniversalCamera } from '@babylonjs/core';
+import { GROUND_SIZE } from 'lib/constants';
 
 import { MainCamera } from './mainCamera';
 import { MainLight } from './mainLight';
@@ -37,7 +38,7 @@ export class MainScene {
 
   // Dumb ground. Just to show something at scene
   private createGround(): GroundMesh {
-    const ground = MeshBuilder.CreateGround('ground', { width: 25, height: 25 });
+    const ground = MeshBuilder.CreateGround('ground', { width: GROUND_SIZE, height: GROUND_SIZE });
     const material = new StandardMaterial('groundMaterial');
     material.diffuseColor = Color3.White();
     ground.material = material;
