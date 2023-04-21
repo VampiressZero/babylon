@@ -1,59 +1,60 @@
-import { DirectionalLight, MeshBuilder, Scene, Vector3 } from '@babylonjs/core';
-import { FC, Fragment, memo, useEffect, useRef, useState } from 'react';
+import { MutableRefObject, useEffect, useRef, FC, Fragment, memo, useState, useCallback } from 'react';
+import { addFigures, baseObjects } from 'lib/utils';
 import { MainScene } from 'lib/immersive/mainScene';
-import { MainCamera } from 'lib/immersive/mainCamera';
 
-import { baseObjects, addMaterial } from 'lib/utils';
+import { SettingsMenu } from '../SettingsMenu';
 
 import styles from './Playground.module.css';
-interface Props {
+import { Play } from './Play';
 
-  /** Number of figures. */
-  readonly countFigure: number;
-}
-const PlaygroundComponent: FC<Props> = ({
-  countFigure,
-}) => {
+export const PlaygroundComponent: FC = () => {
+
+  const [countFigure, setCountFigure] = useState(3);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const sceneRef = useRef<MainScene | null>(null);
+  const mainSceneRef = useRef<MainScene | null>(null);
+  const [mainScene, setMainScene] = useState<MainScene | null>(null);
+
+  const handleChangeCountFigure = (count: number) => {
+    setCountFigure(count);
+  };
 
   useEffect(() => {
     if (canvasRef.current != null) {
-      const scene = new MainScene(canvasRef.current);
-      sceneRef.current = scene;
-
-      // const object = baseObjects(scene.scene);
-
-      // object.material = addMaterial(object, 'ball', {
-      //   diffuse: '/textures/ForestLeaves/diffuse.png',
-      //   ao: '/textures/ForestLeaves/ao.png',
-      //   normal: '/textures/ForestLeaves/normal.png',
-      //   rough: '/textures/ForestLeaves/rough.png',
-      //   displacement: '/textures/ForestLeaves/displacement.png',
-      // });
-      // this.ground.addChild(object);
+      mainSceneRef.current = new MainScene(canvasRef.current);
+      setMainScene(mainSceneRef.current);
     }
 
-    return () => sceneRef.current?.erase();
+    return () => mainSceneRef.current?.erase();
   }, []);
 
   useEffect(() => {
-    for (let i = 0; i < countFigure; i++) {
-      const object = sceneRef?.current && baseObjects(sceneRef.current.scene);
-    }
-  }, [countFigure]);
+    mainScene && addFigures(countFigure, mainScene.shadowGenerator);
+    
+  }, [countFigure, mainScene]);
 
   // const onclick = () => {
-  //   console.log(
-  //     sceneRef.current?.camera.position,
-  //     sceneRef.current?.camera.rotation,
-  //   );
-  // };
+  //   console.log(scene, 1);
 
-  return <canvas
-    // onClick={onclick}
-    className={styles.scene}
-    ref={canvasRef} />;
+  //   // console.log(
+  //   //   sceneRef.current?.camera.position,
+  //   //   sceneRef.current?.camera.rotation,
+  //   // );
+  // };
+  console.log(countFigure);
+
+  return (
+    <Fragment>
+      <canvas
+        // onClick={onclick}
+        className={styles.scene}
+        ref={canvasRef} />
+      <SettingsMenu
+        msc={mainSceneRef}
+        countFigure={countFigure}
+        onChangeCountFigure={handleChangeCountFigure} />
+      { mainScene && <Play countFigure={countFigure} shadowGenerator={mainScene.shadowGenerator} /> }
+    </Fragment>
+  );
 };
 
 export const Playground = memo(PlaygroundComponent);

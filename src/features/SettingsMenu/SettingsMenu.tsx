@@ -1,8 +1,6 @@
-import { Scene } from '@babylonjs/core';
 import { Button, TextField } from '@mui/material';
-import { MainCamera } from 'lib/immersive/mainCamera';
 import { MainScene } from 'lib/immersive/mainScene';
-import { FC, memo } from 'react';
+import { FC, MutableRefObject, memo } from 'react';
 
 import styles from './SettingsMenu.module.css';
 
@@ -13,17 +11,20 @@ interface Props {
 
   /** Change the number of figures. */
   readonly onChangeCountFigure: (count: number) => void;
+
+  /** Change the number of figures. */
+  readonly msc: MutableRefObject<MainScene | null>;
 }
 
 const SettingsMenuComponent: FC<Props> = ({
   countFigure,
   onChangeCountFigure,
+  msc,
 }) => {
 
-  const resetPositionCamera = () => {
-
-  }
-  console.log();
+    const resetPositionCamera = () => {
+      msc?.current?.camera.restoreState();
+  };
 
   return (
     <div className={styles.settings}>

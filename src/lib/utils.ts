@@ -1,4 +1,4 @@
-import { Mesh, MeshBuilder, Scene, StandardMaterial, Texture, Color3 } from '@babylonjs/core';
+import { Mesh, MeshBuilder, StandardMaterial, Texture, Color3, ShadowGenerator, PhysicsImpostor } from '@babylonjs/core';
 import { sample, random } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -6,32 +6,31 @@ import { GROUND_SIZE } from './constants';
 
 import { TexturesUrl } from './models';
 
-export const baseObjects = (scene: Scene) => {
+export const baseObjects = () => {
   const randomSize = random(1.5, 3.5);
-  const randomSizeDiameter = randomSize / 2;
   const randomdiameterTop = random(0, 1.5);
+
   // const randomRadius = random(0, 1);
 
   const boxCreate = () => MeshBuilder.CreateBox(`box${uuidv4()}`, {
     height: randomSize,
     width: randomSize,
+
     // updatable: true
-  }, scene);
+  });
   const sphereCreate = () => MeshBuilder.CreateSphere(
     `sphere${uuidv4()}`,
-    { diameter: randomSizeDiameter },
-    scene,
+    { diameter: randomSize },
   );
   const cylinderCreate = () => MeshBuilder.CreateCylinder(
     `cylinder${uuidv4()}`,
-    { diameter: randomSizeDiameter },
-    scene,
+    { diameter: randomSize },
   );
   const coneCreate = () => MeshBuilder.CreateCylinder(
     `cone${uuidv4()}`,
-    { diameter: randomSizeDiameter, diameterTop: randomdiameterTop },
-    scene,
+    { diameter: randomSize, diameterTop: randomdiameterTop },
   );
+
   // const ribbonCreate = () => MeshBuilder.CreateCapsule(
   //   `ribbon${uuidv4()}`,
   //   { height: randomSize, radius: randomRadius },
@@ -39,7 +38,9 @@ export const baseObjects = (scene: Scene) => {
   // );
 
   const arrayObjects = [boxCreate, sphereCreate, cylinderCreate, coneCreate];
-  const objectCreate = sample(arrayObjects) ?? boxCreate;
+  // const objectCreate = sample(arrayObjects) ?? boxCreate;
+  const objectCreate = sphereCreate;
+
 
   const object = objectCreate();
   object.position.y = object.getBoundingInfo().boundingBox.maximumWorld.y;
@@ -61,7 +62,7 @@ export const baseObjects = (scene: Scene) => {
  * @param name Name object.
  * @param texture Url of textures.
  */
-export function addMaterial(object: Mesh, name: string, texture: TexturesUrl): StandardMaterial {
+export const addMaterial = (object: Mesh, name: string, texture: TexturesUrl): StandardMaterial => {
   const material = new StandardMaterial(`${name}Material${uuidv4()}`);
 
   material.diffuseTexture = new Texture(texture.diffuse);
@@ -75,4 +76,37 @@ export function addMaterial(object: Mesh, name: string, texture: TexturesUrl): S
   material.specularPower = 10;
 
   return material;
-}
+};
+
+/**
+ * Add figures to the scene.
+ * @param countFigure Number of figures.
+ * @param shadowGenerator Shadow generation.
+ */
+export const addFigures = (countFigure: number, shadowGenerator: ShadowGenerator): void => {
+  for (let i = 0; i < countFigure; i++) {
+    const object = baseObjects();
+    shadowGenerator.getShadowMap()?.renderList?.push(object);
+    object.physicsImpostor = new PhysicsImpostor(
+      object,
+      PhysicsImpostor.SphereImpostor,
+      {
+        mass: 1,
+      },
+    );
+  }
+
+  console.log(shadowGenerator.getShadowMap()?.renderList);
+
+};
+
+// const object = baseObjects(scene.scene);
+
+// object.material = addMaterial(object, 'ball', {
+//   diffuse: '/textures/ForestLeaves/diffuse.png',
+//   ao: '/textures/ForestLeaves/ao.png',
+//   normal: '/textures/ForestLeaves/normal.png',
+//   rough: '/textures/ForestLeaves/rough.png',
+//   displacement: '/textures/ForestLeaves/displacement.png',
+// });
+// this.ground.addChild(object);

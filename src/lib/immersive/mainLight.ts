@@ -1,4 +1,4 @@
-import { Color3, HemisphericLight, Scene, Vector3 } from '@babylonjs/core';
+import { Color3, DirectionalLight, PointLight, Scene, Vector3 } from '@babylonjs/core';
 
 /** Main light of the scene. */
 export class MainLight {
@@ -7,9 +7,11 @@ export class MainLight {
    * Creates main source of light for scene.
    * @param scene Main scene.
    */
-  public static create(scene: Scene): void {
-    const hemiLight = new HemisphericLight('mainLight', new Vector3(0, 2, 0), scene);
-    hemiLight.intensity = 0.6;
+  public static create(scene: Scene): DirectionalLight {
+    const hemiLight = new DirectionalLight('mainLight', new Vector3(25, -40, 25), scene);
+    hemiLight.intensity = 0.8;
     hemiLight.specular = Color3.Gray();
+
+    return hemiLight;
   }
 }

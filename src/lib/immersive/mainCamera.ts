@@ -1,4 +1,4 @@
-import { Scene, UniversalCamera } from '@babylonjs/core';
+import { Scene, UniversalCamera, Vector3 } from '@babylonjs/core';
 
 import { CAMERA_POSITION, CAMERA_ROTATION } from 'lib/constants';
 
@@ -14,12 +14,15 @@ export class MainCamera {
     const camera = new UniversalCamera('mainCamera', CAMERA_POSITION, scene);
     // const camera = new UniversalCamera('mainCamera', new Vector3(-5.46, 0, 0), scene);
 
+    camera.setTarget(new Vector3(0, 0, 0));
     camera.attachControl(canvas, true);
-    camera.rotation = CAMERA_ROTATION;
+
+    // camera.rotation = CAMERA_ROTATION;
     // camera.rotation = new Vector3(0.002072, 1.5874, 0);
 
     camera.speed = 0.5;
     camera.inverseRotationSpeed = 10;
+    camera.storeState();
 
     return camera;
   }
