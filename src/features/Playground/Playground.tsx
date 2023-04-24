@@ -1,6 +1,8 @@
 import { MutableRefObject, useEffect, useRef, FC, Fragment, memo, useState, useCallback } from 'react';
-import { addFigures, baseObjects } from 'lib/utils';
+import { addFigures, baseObjects, createPhysics } from 'lib/utils';
 import { MainScene } from 'lib/immersive/mainScene';
+
+import { Color3, Mesh, MeshBuilder, StandardMaterial, Vector3 } from '@babylonjs/core';
 
 import { SettingsMenu } from '../SettingsMenu';
 
@@ -13,6 +15,7 @@ export const PlaygroundComponent: FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mainSceneRef = useRef<MainScene | null>(null);
   const [mainScene, setMainScene] = useState<MainScene | null>(null);
+  const [car, setCar] = useState<Mesh | null>(null);
 
   const handleChangeCountFigure = (count: number) => {
     setCountFigure(count);
@@ -22,30 +25,46 @@ export const PlaygroundComponent: FC = () => {
     if (canvasRef.current != null) {
       mainSceneRef.current = new MainScene(canvasRef.current);
       setMainScene(mainSceneRef.current);
+      const carCreate = MeshBuilder.CreateBox(`box`, {
+        height: 2,
+        width: 4,
+        depth: 2,
+      });
+      setCar(carCreate);
+      const material = new StandardMaterial('groundMaterial');
+      material.diffuseColor = Color3.Green();
+      carCreate.material = material;
+      carCreate.position.y = 10;
+      mainSceneRef.current.shadowGenerator.getShadowMap()?.renderList?.push(carCreate);
+      carCreate.physicsImpostor = createPhysics(carCreate);
+
     }
 
     return () => mainSceneRef.current?.erase();
   }, []);
 
   useEffect(() => {
-    mainScene && addFigures(countFigure, mainScene.shadowGenerator);
-    
+    mainScene?.shadowGenerator.getShadowMap() && addFigures(countFigure, mainScene.shadowGenerator);
   }, [countFigure, mainScene]);
 
-  // const onclick = () => {
-  //   console.log(scene, 1);
+    const onclick = () => {
+    // const object = mainScene?.scene.meshes[1];
+
+    // object?.physicsImpostor && object.physicsImpostor.applyForce(
+    //   new Vector3(400, 0, 0),
+    //   object.getAbsolutePosition(),
+    // );
 
   //   // console.log(
   //   //   sceneRef.current?.camera.position,
   //   //   sceneRef.current?.camera.rotation,
   //   // );
-  // };
-  console.log(countFigure);
+  };
 
   return (
     <Fragment>
       <canvas
-        // onClick={onclick}
+        onClick={onclick}
         className={styles.scene}
         ref={canvasRef} />
       <SettingsMenu

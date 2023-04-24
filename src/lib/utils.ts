@@ -1,4 +1,4 @@
-import { Mesh, MeshBuilder, StandardMaterial, Texture, Color3, ShadowGenerator, PhysicsImpostor } from '@babylonjs/core';
+import { Mesh, MeshBuilder, StandardMaterial, Texture, Color3, ShadowGenerator, PhysicsImpostor, Vector3 } from '@babylonjs/core';
 import { sample, random } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -6,29 +6,37 @@ import { GROUND_SIZE } from './constants';
 
 import { TexturesUrl } from './models';
 
+/** */
+enum ShapeImpostor {
+  'sphere' = PhysicsImpostor.SphereImpostor,
+  'box' = PhysicsImpostor.BoxImpostor,
+  'cylinder' = PhysicsImpostor.CylinderImpostor,
+  'cone' = PhysicsImpostor.CylinderImpostor,
+}
+
 export const baseObjects = () => {
   const randomSize = random(1.5, 3.5);
-  const randomdiameterTop = random(0, 1.5);
+  const randomDiameterTop = random(0, 1.5);
 
   // const randomRadius = random(0, 1);
 
-  const boxCreate = () => MeshBuilder.CreateBox(`box${uuidv4()}`, {
+  const boxCreate = () => MeshBuilder.CreateBox(`box`, {
     height: randomSize,
     width: randomSize,
 
     // updatable: true
   });
   const sphereCreate = () => MeshBuilder.CreateSphere(
-    `sphere${uuidv4()}`,
+    `sphere`,
     { diameter: randomSize },
   );
   const cylinderCreate = () => MeshBuilder.CreateCylinder(
-    `cylinder${uuidv4()}`,
+    `cylinder`,
     { diameter: randomSize },
   );
   const coneCreate = () => MeshBuilder.CreateCylinder(
-    `cone${uuidv4()}`,
-    { diameter: randomSize, diameterTop: randomdiameterTop },
+    `cone`,
+    { diameter: randomSize, diameterTop: randomDiameterTop },
   );
 
   // const ribbonCreate = () => MeshBuilder.CreateCapsule(
@@ -38,12 +46,12 @@ export const baseObjects = () => {
   // );
 
   const arrayObjects = [boxCreate, sphereCreate, cylinderCreate, coneCreate];
-  // const objectCreate = sample(arrayObjects) ?? boxCreate;
-  const objectCreate = sphereCreate;
 
+  const objectCreate = sample(arrayObjects) ?? boxCreate;
+  // const objectCreate = sphereCreate;
 
   const object = objectCreate();
-  object.position.y = object.getBoundingInfo().boundingBox.maximumWorld.y;
+  object.position.y = object.getBoundingInfo().boundingBox.maximumWorld.y + random(1, 5);
 
   const maxPosition = GROUND_SIZE / 2;
   object.position.x = random(-maxPosition, maxPosition);
@@ -87,20 +95,28 @@ export const addFigures = (countFigure: number, shadowGenerator: ShadowGenerator
   for (let i = 0; i < countFigure; i++) {
     const object = baseObjects();
     shadowGenerator.getShadowMap()?.renderList?.push(object);
-    object.physicsImpostor = new PhysicsImpostor(
-      object,
-      PhysicsImpostor.SphereImpostor,
-      {
-        mass: 1,
-      },
-    );
+    object.physicsImpostor = createPhysics(object);
+    // car.intersectsMesh(object, true);
   }
-
-  console.log(shadowGenerator.getShadowMap()?.renderList);
-
 };
 
-// const object = baseObjects(scene.scene);
+/**
+ * Creates physics for an object.
+ * @param object Object.
+ */
+export const createPhysics = (object: Mesh): PhysicsImpostor => {
+  const name = object.name || ShapeImpostor.box;
+  const typeImpostor = name as keyof typeof ShapeImpostor;
+
+  const physicsImpostor = new PhysicsImpostor(
+    object,
+    ShapeImpostor[typeImpostor],
+    {
+      mass: 1,
+    },
+  );
+  return physicsImpostor;
+};
 
 // object.material = addMaterial(object, 'ball', {
 //   diffuse: '/textures/ForestLeaves/diffuse.png',
