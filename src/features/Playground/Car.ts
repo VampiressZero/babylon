@@ -1,7 +1,5 @@
-import { FC, memo, MutableRefObject, useCallback, useEffect, useState } from 'react';
-import { MainScene } from 'lib/immersive/mainScene';
-import { addFigures, baseObjects, createPhysics } from 'lib/utils';
-import { Color3, KeyboardEventTypes, Mesh, MeshBuilder, Scene, ShadowGenerator, StandardMaterial } from '@babylonjs/core';
+import { createPhysics } from 'lib/utils';
+import { Color3, KeyboardEventTypes, MeshBuilder, Scene, ShadowGenerator, StandardMaterial } from '@babylonjs/core';
 
 // interface Props {
 
