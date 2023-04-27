@@ -9,8 +9,9 @@ export class MainLight {
    */
   public static create(scene: Scene): DirectionalLight {
     const hemiLight = new DirectionalLight('mainLight', new Vector3(45, -45, 0), scene);
-    hemiLight.intensity = 0.8;
-    hemiLight.specular = Color3.Gray();
+    hemiLight.intensity = 0.5;
+    hemiLight.specular = new Color3(0.722, 0.843, 1);
+    // hemiLight.range = 1000;
 
     return hemiLight;
   }

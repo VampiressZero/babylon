@@ -74,13 +74,13 @@ export class MainScene {
   }
 
   private createSky(): void {
-    const sky = MeshBuilder.CreateSphere('sky', { diameter: 1000.0 });
+    const sky = MeshBuilder.CreateSphere('sky', { diameter: 1000 });
     const skyMaterial = new StandardMaterial('skyBox');
     skyMaterial.backFaceCulling = false;
-    skyMaterial.reflectionTexture = new HDRCubeTexture('textures/sky/sky.hdr', this.scene, 1000);
-    skyMaterial.reflectionTexture.coordinatesMode = Texture.SKYBOX_MODE;
-    // skyMaterial.diffuseColor = new Color3(0, 0, 0);
-    // skyMaterial.specularColor = new Color3(0, 0, 0);
+    // skyMaterial.reflectionTexture = new HDRCubeTexture('textures/sky/sky.hdr', this.scene, 1000);
+    // skyMaterial.reflectionTexture.coordinatesMode = Texture.SKYBOX_MODE;
+    skyMaterial.diffuseColor = new Color3(0, 0, 0);
+    skyMaterial.specularColor = new Color3(0, 0, 0);
     sky.material = skyMaterial;
   }
 
@@ -89,6 +89,7 @@ export class MainScene {
     shadowGenerator.useBlurExponentialShadowMap = true;
     shadowGenerator.useKernelBlur = true;
     shadowGenerator.blurKernel = 64;
+    // shadowGenerator.usePercentageCloserFiltering = true;
     return shadowGenerator;
   }
 

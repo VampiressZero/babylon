@@ -1,7 +1,5 @@
 import { Scene, UniversalCamera, Vector3 } from '@babylonjs/core';
 
-import { CAMERA_POSITION, CAMERA_ROTATION } from 'lib/constants';
-
 /** Main camera of the scene. */
 export class MainCamera {
 
@@ -11,7 +9,7 @@ export class MainCamera {
    * @param canvas Canvas.
    */
   public static create(scene: Scene, canvas: HTMLCanvasElement): UniversalCamera {
-    const camera = new UniversalCamera('mainCamera', CAMERA_POSITION, scene);
+    const camera = new UniversalCamera('mainCamera', new Vector3(-18, 10, -15), scene);
     // const camera = new UniversalCamera('mainCamera', new Vector3(-5.46, 0, 0), scene);
 
     camera.setTarget(new Vector3(0, 0, 0));
@@ -23,7 +21,8 @@ export class MainCamera {
     camera.speed = 0.5;
     camera.inverseRotationSpeed = 10;
     camera.storeState();
-
+    camera.noRotationConstraint = false;
+    // camera.upperBetaLimit = Math.PI / 2.2;
     return camera;
   }
 }

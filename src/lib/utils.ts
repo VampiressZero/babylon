@@ -53,7 +53,7 @@ export const baseObjects = () => {
   const object = objectCreate();
   object.position.y = object.getBoundingInfo().boundingBox.maximumWorld.y + random(1, 5);
 
-  const maxPosition = GROUND_SIZE / 2;
+  const maxPosition = GROUND_SIZE / 2 - 2;
   object.position.x = random(-maxPosition, maxPosition);
   object.position.z = random(-maxPosition, maxPosition);
 
@@ -95,7 +95,7 @@ export const addFigures = (countFigure: number, shadowGenerator: ShadowGenerator
   for (let i = 0; i < countFigure; i++) {
     const object = baseObjects();
     shadowGenerator.getShadowMap()?.renderList?.push(object);
-    object.physicsImpostor = createPhysics(object);
+    object.physicsImpostor = createPhysics(object, 5);
     // car.intersectsMesh(object, true);
   }
 };
@@ -104,7 +104,7 @@ export const addFigures = (countFigure: number, shadowGenerator: ShadowGenerator
  * Creates physics for an object.
  * @param object Object.
  */
-export const createPhysics = (object: Mesh): PhysicsImpostor => {
+export const createPhysics = (object: Mesh, mass: number): PhysicsImpostor => {
   const name = object.name || ShapeImpostor.box;
   const typeImpostor = name as keyof typeof ShapeImpostor;
 
@@ -112,7 +112,7 @@ export const createPhysics = (object: Mesh): PhysicsImpostor => {
     object,
     ShapeImpostor[typeImpostor],
     {
-      mass: 1,
+      mass,
     },
   );
   return physicsImpostor;
