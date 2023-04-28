@@ -1,22 +1,18 @@
 import {
-  MutableRefObject,
   useEffect,
   useRef,
   FC,
   Fragment,
   memo,
   useState,
-  useCallback,
 } from 'react';
-import { addFigures, baseObjects, createPhysics } from 'lib/utils';
+import { addFigures } from 'lib/utils';
 import { MainScene } from 'lib/immersive/mainScene';
 
 import {
-  Color3,
-  KeyboardEventTypes,
+  IPointerEvent,
   Mesh,
-  MeshBuilder,
-  StandardMaterial,
+  PickingInfo,
   Vector3,
 } from '@babylonjs/core';
 
@@ -31,6 +27,7 @@ export const PlaygroundComponent: FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mainSceneRef = useRef<MainScene | null>(null);
   const [mainScene, setMainScene] = useState<MainScene | null>(null);
+  const [touchCoordinates, setTouchCoordinates] = useState<{x: number; z: number;} | null>(null);
   const [car, setCar] = useState<Mesh | null>(null);
 
   const handleChangeCountFigure = (count: number) => {
@@ -41,7 +38,13 @@ export const PlaygroundComponent: FC = () => {
     if (canvasRef.current != null) {
       mainSceneRef.current = new MainScene(canvasRef.current);
       setMainScene(mainSceneRef.current);
-      createCar(mainSceneRef.current?.scene, mainSceneRef.current.shadowGenerator);
+      setCar(createCar(mainSceneRef.current?.scene, mainSceneRef.current.shadowGenerator));
+
+      mainSceneRef.current.scene.onPointerDown = (_evt: IPointerEvent, pickResult: PickingInfo) => {
+        if (pickResult.hit && pickResult.pickedPoint) {
+          setTouchCoordinates({ x: pickResult.pickedPoint.x, z: pickResult.pickedPoint.z });
+        }
+      };
     }
 
     return () => mainSceneRef.current?.erase();
@@ -51,6 +54,33 @@ export const PlaygroundComponent: FC = () => {
     mainScene?.shadowGenerator.getShadowMap() &&
       addFigures(countFigure, mainScene.shadowGenerator);
   }, [countFigure, mainScene]);
+
+  useEffect(() => {
+    console.log(touchCoordinates, car);
+
+    if (touchCoordinates !== null && car !== null) {
+      // console.log(car.physicsImpostor?.restitution);
+      // console.log(car.physicsImpostor?.getLinearVelocity());
+      // const origin = new Vector3(10, 0, 0);
+      // const radiusOrEventOptions = 5;
+      // mainScene?.physicsHelper.applyRadialExplosionImpulse(
+      //   origin,
+
+      //   radiusOrEventOptions,
+
+      //   // strength: 20,
+      //   // falloff: PhysicsRadialImpulseFalloff.Linear,
+
+      // );
+
+      car.physicsImpostor?.setLinearVelocity(new Vector3(25, 0, 0));
+      console.log(car.physicsImpostor?.getLinearVelocity());
+
+      // car.speed
+      // console.log(touchCoordinates);
+    }
+
+  }, [car, touchCoordinates]);
 
   const onclick = () => {
     // const object = mainScene?.scene.meshes[1];

@@ -5,14 +5,19 @@ import {
   GroundMesh,
   HDRCubeTexture,
   IShadowLight,
+  Mesh,
   MeshBuilder,
+  PhysicsHelper,
   PhysicsImpostor,
+  PolygonMeshBuilder,
   Scene,
   ShadowGenerator,
+  Sound,
   StandardMaterial,
   Texture,
   UniversalCamera,
 } from '@babylonjs/core';
+
 import { GROUND_SIZE } from 'lib/constants';
 
 import { MainCamera } from './mainCamera';
@@ -33,7 +38,10 @@ export class MainScene {
   public readonly shadowGenerator: ShadowGenerator;
 
   /** Ground. */
-  public readonly ground: GroundMesh;
+  public readonly ground: Mesh;
+
+  /** Physics helper. */
+  public readonly physicsHelper: PhysicsHelper;
 
   public constructor(
     canvas: HTMLCanvasElement,
@@ -53,18 +61,25 @@ export class MainScene {
     const light = MainLight.create(this.scene);
     this.shadowGenerator = this.createShadowGenerator(light);
 
-
     this.ground = this.createGround();
     this.ground.physicsImpostor = new PhysicsImpostor(
       this.ground,
       PhysicsImpostor.BoxImpostor,
       {
         mass: 0,
-        restitution: 2,
-        friction: 0.5,
+        restitution: 0.5,
+
+        // friction: 0.1,
       },
     );
     this.createSky();
+    this.physicsHelper = new PhysicsHelper(this.scene);
+    const backgroundMusic = new Sound('Background music', '/sounds/background music.mp3', this.scene, null, {
+      autoplay: false,
+    });
+
+    // const polygonMeshBuilder = 
+    // new PolygonMeshBuilder('polytri', corners, this.scene, earcut);
   }
 
   /** Erase 3D related resources. */
@@ -77,6 +92,7 @@ export class MainScene {
     const sky = MeshBuilder.CreateSphere('sky', { diameter: 1000 });
     const skyMaterial = new StandardMaterial('skyBox');
     skyMaterial.backFaceCulling = false;
+
     // skyMaterial.reflectionTexture = new HDRCubeTexture('textures/sky/sky.hdr', this.scene, 1000);
     // skyMaterial.reflectionTexture.coordinatesMode = Texture.SKYBOX_MODE;
     skyMaterial.diffuseColor = new Color3(0, 0, 0);
@@ -89,12 +105,13 @@ export class MainScene {
     shadowGenerator.useBlurExponentialShadowMap = true;
     shadowGenerator.useKernelBlur = true;
     shadowGenerator.blurKernel = 64;
+
     // shadowGenerator.usePercentageCloserFiltering = true;
     return shadowGenerator;
   }
 
-  private createGround(): GroundMesh {
-    const ground = MeshBuilder.CreateGround('ground', { width: GROUND_SIZE, height: GROUND_SIZE });
+  private createGround(): Mesh {
+    const ground = MeshBuilder.CreateBox('ground', { width: GROUND_SIZE, depth: GROUND_SIZE, height: 0.5 });
 
     // ground.material = addMaterial(ground, 'ball', {
     //   diffuse: '/textures/ForestLeaves/diffuse.png',

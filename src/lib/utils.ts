@@ -48,14 +48,19 @@ export const baseObjects = () => {
   const arrayObjects = [boxCreate, sphereCreate, cylinderCreate, coneCreate];
 
   const objectCreate = sample(arrayObjects) ?? boxCreate;
+
   // const objectCreate = sphereCreate;
 
   const object = objectCreate();
   object.position.y = object.getBoundingInfo().boundingBox.maximumWorld.y + random(1, 5);
 
   const maxPosition = GROUND_SIZE / 2 - 2;
-  object.position.x = random(-maxPosition, maxPosition);
-  object.position.z = random(-maxPosition, maxPosition);
+
+  // object.position.x = random(-maxPosition, maxPosition);
+  // object.position.z = random(-maxPosition, maxPosition);
+
+  object.position.x = 5;
+  object.position.z = 0;
 
   const material = new StandardMaterial('groundMaterial');
   material.diffuseColor = Color3.Random();
@@ -92,19 +97,22 @@ export const addMaterial = (object: Mesh, name: string, texture: TexturesUrl): S
  * @param shadowGenerator Shadow generation.
  */
 export const addFigures = (countFigure: number, shadowGenerator: ShadowGenerator): void => {
-  for (let i = 0; i < countFigure; i++) {
+  // for (let i = 0; i < countFigure; i++) {
     const object = baseObjects();
     shadowGenerator.getShadowMap()?.renderList?.push(object);
-    object.physicsImpostor = createPhysics(object, 5);
+    object.physicsImpostor = createPhysics(object, 7000);
+
     // car.intersectsMesh(object, true);
-  }
+  // }
 };
 
 /**
  * Creates physics for an object.
  * @param object Object.
+ * @param mass Object mass.
+ * @param restitution Object restitution.
  */
-export const createPhysics = (object: Mesh, mass: number): PhysicsImpostor => {
+export const createPhysics = (object: Mesh, mass: number, restitution = 0.1): PhysicsImpostor => {
   const name = object.name || ShapeImpostor.box;
   const typeImpostor = name as keyof typeof ShapeImpostor;
 
@@ -113,6 +121,7 @@ export const createPhysics = (object: Mesh, mass: number): PhysicsImpostor => {
     ShapeImpostor[typeImpostor],
     {
       mass,
+      restitution,
     },
   );
   return physicsImpostor;
